@@ -2,7 +2,7 @@
 This is a fast and simple wisp calulator console app for Noita. Feel free to use it, there is no monthly subscription :)
 
 ### How to start
-1. Download just the infini_wisp_calc.exe from the Release tab:
+1. Download just the infini_wisp_calc.exe from the Release tab:  
 https://github.com/noby-y/wisp_calc/releases/tag/v1.0.0
 2. Launch the app and it will open a console window
 3. The app will ask to enter the minimum and the maximum lifetime values
