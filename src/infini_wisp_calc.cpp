@@ -128,7 +128,7 @@ int apply_config(){
 //* ==================================== BFS SOLUTION SEARCH 
 
 
-struct Solution{
+struct Solution {
     int lhs;
     std::array<int, mod_count> mods;
 };
