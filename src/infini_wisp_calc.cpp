@@ -129,8 +129,16 @@ int apply_config(){
 
 struct Solution {
     int lhs;
+    int mod_used;
     std::array<int, mod_count> mods;
 };
+
+// Make a list of solution elements
+std::vector<Solution> solution_list;
+
+bool compare_mod_used(const Solution& a, const Solution& b) {
+    return a.mod_used < b.mod_used;
+}
 
 Solution bfs_solve(int mask, int l, int r){
     Solution init{};
@@ -213,21 +221,18 @@ int loop_mask(int range_min, int range_max){
 
     for (int R = range_min; R <= range_max; ++R){
         for (int mask = 0; mask < 1 << mod_count; ++mask){
-            if (auto res = bfs_solve(mask, R, R); res.lhs == R){
+            if (auto sol = bfs_solve(mask, R, R); sol.lhs == R){
                 bool skip = false;
                 for(int i = 0; i < mod_count; ++i){
-                    if (res.mods[i] != 0 && coef[i] == 0){
+                    if (sol.mods[i] != 0 && coef[i] == 0){
                         skip = true;
                         break;
                     }
                 }
                 if (!skip){
-                    sol_count += 1;    
-                    table << std::accumulate(res.mods.begin(), res.mods.end(), 0);
-                    for (int i = 0; i < mod_count; ++i){
-                        if (coef[i] != 0) table << +res.mods[i];
-                    }
-                    table << fort::endr;
+                    sol_count += 1;
+                    sol.mod_used = std::accumulate(sol.mods.begin(), sol.mods.end(), 0);    
+                    solution_list.push_back(sol);
                 }
             }
         }
@@ -267,7 +272,16 @@ int main()
     range_min = (range_min * -1) - 1;
     
     loop_mask(range_min, range_max);
-    
+
+    std::sort(solution_list.begin(), solution_list.end(), compare_mod_used);
+
+    for (const auto& sol : solution_list) {
+        table << sol.mod_used;
+        for (int i = 0; i < mod_count; ++i){
+            if (coef[i] != 0) table << +sol.mods[i];
+        }
+        table << fort::endr;
+    }
     for(int i = 0; i <= mod_count; ++i) table.column(i).set_cell_text_align(fort::text_align::right);
     std::cout << table.to_string() << std::endl;
     std::cout << "Total solutions found: " << sol_count << '\n';
