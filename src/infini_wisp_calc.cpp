@@ -20,11 +20,11 @@ fort::utf8_table table;
 
 std::map<std::string, int> config = {
     {"advanced_mode", 1},
-    {"table_style", 1},
+    {"table_style", 0},
     {"reduce_lifetime", 1},
     {"chain_spell", 1},
     {"orbit_ping_pong", 1},
-    {"spiral_arc", 0},
+    {"spiral_arc", 1},
     {"incrase_lifetime", 1},
     {"phasing_true_orbit", 1},
     {"null_shot", 1}
@@ -61,14 +61,13 @@ int parse_config(){
             int value_int;
             if (!tryParse(value, value_int)){
                 std::cerr << "Invalid value type for " << key << " variable in config file - must be a NUMBER. Using default value.\n";
-                value_int = 1;
+                continue;
             }
             if (value_int == 0 || value_int == 1){
                 config[key] = value_int;
             }
             else {
                 std::cerr << "Invalid value for " << key << " variable in config file. - must be 0 or 1. Using default value.\n";
-                config[key] = 1;
             }
         }
     }
@@ -88,9 +87,9 @@ int parse_config(){
                 <<  "# Enable advanced mode with extra information" <<  std::endl
                 <<  "advanced_mode=1" <<  std::endl
                 <<  std::endl
-                <<  "# Disable pretty output table style in case your terminal doesn't support utf-8 encoding." <<  std::endl
-                <<  "# To fix the issue refer to this guide: https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window" <<  std::endl
-                <<  "table_style=1" <<  std::endl
+                <<  "# Set table_style=1 to make pretty table" <<  std::endl
+                <<  "# In case your terminal doesn't support utf-8 encoding (table_style=1 looks weird) refer to this guide: https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window" <<  std::endl
+                <<  "table_style=0" <<  std::endl
                 <<  std::endl
                 <<  "# Select which modifiers to allow when searching for a solution " <<  std::endl
                 <<  "# WARNING! Removing certain modifier combinations makes it impossible to find certain solutions" <<  std::endl
