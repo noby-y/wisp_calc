@@ -11,12 +11,12 @@
 #include "D:/Programming projects/wisp_calc/lib/fort.c"
 #include "D:/Programming projects/wisp_calc/lib/fort.hpp"
 
-//* Globals
+//* ==================================== Globals
+
 constexpr int mod_count = 7;
 int sol_count = 0;
 
 std::array<int, mod_count> coef{-42, -30, 25, 50, 75, 80, 280};
-fort::utf8_table table;
 
 std::map<std::string, int> config = {
     {"advanced_mode", 1},
@@ -105,13 +105,6 @@ int parse_config(){
 }
 
 int apply_config(){
-    if (config["table_style"] == 0){
-        table.set_border_style(FT_BASIC_STYLE);
-    }
-    else if(config["table_style"] == 1){
-        table.set_border_style(FT_SOLID_STYLE);
-    }
-    
     // Apply config to modifiers
     coef[0] *= config["reduce_lifetime"];
     coef[1] *= config["chain_spell"];
@@ -209,16 +202,6 @@ Solution bfs_solve(int mask, int l, int r){
 }
 
 int loop_mask(int range_min, int range_max){
-    table << fort::header << "Mod count";
-    if (coef[0] != 0) table << "RL";
-    if (coef[1] != 0) table << "Chain";
-    if (coef[2] != 0) table << "Orb/PP";
-    if (coef[3] != 0) table << "Spir";
-    if (coef[4] != 0) table << "IL";
-    if (coef[5] != 0) table << "Phas/TO";
-    if (coef[6] != 0) table << "Null";
-    table << fort::endr;
-
     for (int R = range_min; R <= range_max; ++R){
         for (int mask = 0; mask < 1 << mod_count; ++mask){
             if (auto sol = bfs_solve(mask, R, R); sol.lhs == R){
@@ -240,6 +223,43 @@ int loop_mask(int range_min, int range_max){
     return 0;
 }
 
+//* ==================================== TABLE FORMATTING
+
+int set_table_style(fort::utf8_table& table){
+    if (config["table_style"] == 0){
+        table.set_border_style(FT_BASIC_STYLE);
+    }
+    else if(config["table_style"] == 1){
+        table.set_border_style(FT_SOLID_STYLE);
+    }
+    return 0;
+}
+
+int set_table_header(fort::utf8_table& table){
+    table << fort::header << "Mod count";
+    if (coef[0] != 0) table << "RL";
+    if (coef[1] != 0) table << "Chain";
+    if (coef[2] != 0) table << "Orb/PP";
+    if (coef[3] != 0) table << "Spir";
+    if (coef[4] != 0) table << "IL";
+    if (coef[5] != 0) table << "Phas/TO";
+    if (coef[6] != 0) table << "Null";
+    table << fort::endr;
+    return 0;
+}
+
+int fill_table(fort::utf8_table& table){
+    for (auto sol : solution_list){
+        table << sol.lhs << sol.mod_used;
+        for (int i = 0; i < mod_count; ++i){
+            table << sol.mods[i];
+        }
+        table << fort::endr;
+    }
+    for(int i = 0; i <= mod_count; ++i) 
+        table.column(i).set_cell_text_align(fort::text_align::right);
+    return 0;
+}
 //* ==================================== MAIN PROGRAM 
 
 
@@ -250,42 +270,45 @@ int main()
     int range_max = 0;
     int range_min = 0;
 
-    std::cout << "Enter min lifetime: ";
-    std::string input;
-    getline(std::cin, input);
-    while (!tryParse(input, range_max))
-    {
-        std::cout << "Bad input. Enter a NUMBER: ";
+    // make a whule true loop
+    while (true){
+        std::cout << "Enter min lifetime: ";
+        std::string input;
         getline(std::cin, input);
-    }
-
-    std::cout << "Enter max lifetime: ";
-    std::string input2;
-    getline(std::cin, input2);
-    while (!tryParse(input2, range_min))
-    {
-        std::cout << "Bad input. Enter a NUMBER: ";
-        getline(std::cin, input);
-    }
-
-    range_max = (range_max * -1) - 1;
-    range_min = (range_min * -1) - 1;
-    
-    loop_mask(range_min, range_max);
-
-    std::sort(solution_list.begin(), solution_list.end(), compare_mod_used);
-
-    for (const auto& sol : solution_list) {
-        table << sol.mod_used;
-        for (int i = 0; i < mod_count; ++i){
-            if (coef[i] != 0) table << +sol.mods[i];
+        while (!tryParse(input, range_max))
+        {
+            std::cout << "Bad input. Enter a NUMBER: ";
+            getline(std::cin, input);
         }
-        table << fort::endr;
-    }
-    for(int i = 0; i <= mod_count; ++i) table.column(i).set_cell_text_align(fort::text_align::right);
-    std::cout << table.to_string() << std::endl;
-    std::cout << "Total solutions found: " << sol_count << '\n';
 
-    std::cout << "Press Enter to exit the program";
-    getline(std::cin, input);
+        std::cout << "Enter max lifetime: ";
+        std::string input2;
+        getline(std::cin, input2);
+        while (!tryParse(input2, range_min))
+        {
+            std::cout << "Bad input. Enter a NUMBER: ";
+            getline(std::cin, input);
+        }
+
+        range_max = (range_max * -1) - 1;
+        range_min = (range_min * -1) - 1;
+        
+        loop_mask(range_min, range_max);
+
+        std::sort(solution_list.begin(), solution_list.end(), compare_mod_used);
+        {
+            fort::utf8_table table;
+
+            set_table_style(table);
+            set_table_header(table);
+            fill_table(table);
+
+            std::cout << table.to_string() << std::endl;
+            std::cout << "Total solutions found: " << sol_count << '\n';
+        }
+        sol_count = 0;
+        solution_list.clear();
+        std::cout << "Close the program or make another input.\n";
+        // getline(std::cin, input);
+    }
 }
