@@ -8,8 +8,8 @@
 #include <numeric>
 #include <queue>
 #include <vector>
-#include "D:/Programming projects/wisp_calc/lib/fort.c"
-#include "D:/Programming projects/wisp_calc/lib/fort.hpp"
+#include "../lib/fort.c"
+#include "../lib/fort.hpp"
 
 //* ==================================== Globals
 
