@@ -252,7 +252,7 @@ int fill_table(fort::utf8_table& table){
     for (auto sol : solution_list){
         table << sol.mod_used;
         for (int i = 0; i < mod_count; ++i){
-            table << sol.mods[i];
+            if (coef[i] != 0) table << sol.mods[i];
         }
         table << fort::endr;
     }
