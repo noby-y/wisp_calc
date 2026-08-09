@@ -11,4 +11,3 @@ This is a fast and simple wisp calulator console app for Noita. Feel free to use
 - If the table doesn't output correctly, please read config.cfg file that will auto-generate when you first launch the app
 - You can set a filter on which modifiers are allowed and which aren't through config.cfg
 - Advanced mode coming soon
-- Currently only works for windows, although you're free to download the source code and recompile it for Linux if you can
